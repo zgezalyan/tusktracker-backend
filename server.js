@@ -2,8 +2,12 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const morgan = require('morgan');
 const cors = require('cors');
+const connectDB = require('./config/db');
 
 const app = express();
+
+// Connect Database
+connectDB();
 
 // Middleware
 app.use(cors());
@@ -16,7 +20,6 @@ app.get('/', (req, res) => {
 });
 
 // Start server
-const PORT = 3000;
-app.listen(PORT, () => {
-    console.log(`Server started on http://localhost:${PORT}`);
-});
+const PORT = process.env.PORT || 5000;
+
+app.listen(PORT, () => console.log(`Server started on port ${PORT}`));
