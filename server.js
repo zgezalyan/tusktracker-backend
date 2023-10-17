@@ -5,6 +5,7 @@ const cors = require('cors');
 const connectDB = require('./config/db');
 
 const app = express();
+const tasksRoutes = require('./routes/tasks');
 
 // Connect Database
 connectDB();
@@ -13,6 +14,7 @@ connectDB();
 app.use(cors());
 app.use(morgan('dev'));
 app.use(bodyParser.json());
+app.use('/api/tasks', tasksRoutes);
 
 // Basic route
 app.get('/', (req, res) => {
