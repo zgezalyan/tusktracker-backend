@@ -6,6 +6,7 @@ const connectDB = require('./config/db');
 
 const app = express();
 const tasksRoutes = require('./routes/tasks');
+const userRoutes = require('./routes/users');
 
 // Connect Database
 connectDB();
@@ -14,6 +15,7 @@ connectDB();
 app.use(cors());
 app.use(morgan('dev'));
 app.use(bodyParser.json());
+app.use('/users', userRoutes);
 app.use('/api/tasks', tasksRoutes);
 
 // Basic route
