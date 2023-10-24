@@ -1,6 +1,7 @@
 const User = require('../models/User');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
+const { CustomError } = require('../middleware/errors');
 
 exports.signUp = async (req, res) => {
     try {
@@ -9,7 +10,7 @@ exports.signUp = async (req, res) => {
         // Check if user exists
         let user = await User.findOne({ email });
         if (user) {
-            return res.status(400).json({ errors: [{ msg: 'User already exists' }] });
+            throw new CustomError('User already exists', 400);
         }
 
         // Hash the password
@@ -31,14 +32,14 @@ exports.signUp = async (req, res) => {
             }
         };
 
-        jwt.sign(payload, 'secret', { expiresIn: '1h' }, (err, token) => {
-            if (err) throw err;
+        jwt.sign(payload, 'secret', { expiresIn: '1h' }, (error, token) => {
+            if (error) throw new CustomError(error.message, 400);
             res.json({ token });
         });
 
-    } catch (err) {
-        console.error(err.message);
-        res.status(500).send('Server error');
+    } catch (error) {
+        console.error(error.message);
+        next(error);
     }
 };
 
@@ -49,13 +50,13 @@ exports.logIn = async (req, res) => {
         // Check if user exists
         let user = await User.findOne({ email });
         if (!user) {
-            return res.status(400).json({ errors: [{ msg: 'Invalid credentials' }] });
+            throw new CustomError('Invalid credentials', 400);
         }
 
         // Check password
         const isMatch = await bcrypt.compare(password, user.password);
         if (!isMatch) {
-            return res.status(400).json({ errors: [{ msg: 'Invalid credentials' }] });
+            throw new CustomError('Invalid credentials', 400);
         }
 
         // Create a JWT payload
@@ -65,13 +66,13 @@ exports.logIn = async (req, res) => {
             }
         };
 
-        jwt.sign(payload, 'secret', { expiresIn: '1h' }, (err, token) => {
-            if (err) throw err;
+        jwt.sign(payload, 'secret', { expiresIn: '1h' }, (error, token) => {
+            if (error) throw new CustomError(error.message, 400);
             res.json({ token });
         });
 
-    } catch (err) {
-        console.error(err.message);
-        res.status(500).send('Server error');
+    } catch (error) {
+        console.error(error.message);
+        next(error);
     }
 };

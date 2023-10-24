@@ -8,6 +8,9 @@ const app = express();
 const tasksRoutes = require('./routes/tasks');
 const userRoutes = require('./routes/users');
 
+// Import the error handling middleware
+const { errorHandler } = require('./middleware/errors');
+
 // Connect Database
 connectDB();
 
@@ -22,6 +25,8 @@ app.use('/api/tasks', tasksRoutes);
 app.get('/', (req, res) => {
     res.send('Hello World');
 });
+
+app.use(errorHandler);
 
 // Start server
 const PORT = process.env.PORT || 5000;

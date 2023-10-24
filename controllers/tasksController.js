@@ -1,4 +1,5 @@
 const Task = require('../models/Task');
+const { CustomError } = require('../middleware/errors');
 
 exports.createTask = async (req, res) => {
     try {
@@ -17,7 +18,7 @@ exports.createTask = async (req, res) => {
         await task.save();
         res.status(201).json(task);
       } catch (error) {
-        res.status(500).json({ error: 'Internal server error' });
+        next(error);
       }
 }
 
@@ -25,11 +26,11 @@ exports.getTaskById = async (req, res) => {
     try {
         const task = await Task.findById(req.params.taskId);
         if (!task) {
-          return res.status(404).json({ error: 'Task not found' });
+            throw new CustomError('Task not found', 404);
         }
         res.status(200).json(task);
       } catch (error) {
-        res.status(500).json({ error: 'Internal server error' });
+        next(error);
       }
 }
 
@@ -38,7 +39,7 @@ exports.getAllUserTasks = async (req, res) => {
         const tasks = await Task.find({ user: req.params.userId });
         res.status(200).json(tasks);
       } catch (error) {
-        res.status(500).json({ error: 'Internal server error' });
+        next(error);
       }
 }
 
@@ -50,11 +51,11 @@ exports.addOrChangeDescription = async (req, res) => {
           { new: true }
         );
         if (!task) {
-          return res.status(404).json({ error: 'Task not found' });
+            throw new CustomError('Task not found', 404);
         }
         res.status(200).json(task);
       } catch (error) {
-        res.status(500).json({ error: 'Internal server error' });
+        next(error);
       }
 }
 
@@ -66,11 +67,11 @@ exports.addOrChangeTags = async (req, res) => {
           { new: true }
         );
         if (!task) {
-          return res.status(404).json({ error: 'Task not found' });
+            throw new CustomError('Task not found', 404);
         }
         res.status(200).json(task);
       } catch (error) {
-        res.status(500).json({ error: 'Internal server error' });
+        next(error);
       }
 }
 
@@ -79,7 +80,7 @@ exports.getTaskChildren = async (req, res) => {
         const children = await Task.find({ parentTask: req.params.taskId });
         res.status(200).json(children);
       } catch (error) {
-        res.status(500).json({ error: 'Internal server error' });
+        next(error);
       }
 }
 
@@ -91,11 +92,11 @@ exports.changeTitle = async (req, res) => {
           { new: true }
         );
         if (!task) {
-          return res.status(404).json({ error: 'Task not found' });
+            throw new CustomError('Task not found', 404);
         }
         res.status(200).json(task);
       } catch (error) {
-        res.status(500).json({ error: 'Internal server error' });
+        next(error);
       }
 }
 
@@ -103,10 +104,10 @@ exports.deleteTask = async (req, res) => {
     try {
         const task = await Task.findByIdAndRemove(req.params.taskId);
         if (!task) {
-          return res.status(404).json({ error: 'Task not found' });
+            throw new CustomError('Task not found', 404);
         }
         res.status(204).send();
       } catch (error) {
-        res.status(500).json({ error: 'Internal server error' });
+        next(error);
       }
 }
