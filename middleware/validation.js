@@ -1,4 +1,5 @@
 const { body, validationResult } = require('express-validator');
+const { CustomError } = require('../middleware/errors');
 
 exports.validateUserRegistration = [
   // Validate username
@@ -30,8 +31,23 @@ exports.validateUserRegistration = [
   (req, res, next) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-      return res.status(400).json({ errors: errors.array() });
+        throw new CustomError({ errors: errors.array() }, 400);
     }
     next();
   },
 ];
+
+exports.validateTaskParameter = [
+    body('user')
+      .trim()
+      .isAlphanumeric().withMessage('Parameters must contain only letters and numbers'),
+
+    // Check for errors
+    (req, res, next) => {
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) {
+             throw new CustomError({ errors: errors.array() }, 404);
+        }
+        next();
+    },
+]
