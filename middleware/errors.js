@@ -1,7 +1,8 @@
 class CustomError extends Error {
-    constructor(message, statusCode) {
-      super(message);
-      this.statusCode = statusCode;
+    constructor(message, statusCode, listOfErrors = []) {
+        super(message);
+        this.statusCode = statusCode;
+        this.listOfErrors = listOfErrors;
     }
   }
   
@@ -10,6 +11,9 @@ class CustomError extends Error {
   
     // Handle specific types of errors and send appropriate responses
     if (err instanceof CustomError) {
+        if (err.listOfErrors.length > 0) {
+            return res.status(err.statusCode).json({ errors: err.listOfErrors });
+        }
       return res.status(err.statusCode).json({ error: err.message });
     }
   

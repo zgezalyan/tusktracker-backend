@@ -3,7 +3,7 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const { CustomError } = require('../middleware/errors');
 
-exports.signUp = async (req, res) => {
+exports.signUp = async (req, res, next) => {
     try {
         const { username, email, password } = req.body;
 
@@ -32,7 +32,7 @@ exports.signUp = async (req, res) => {
             }
         };
 
-        jwt.sign(payload, 'secret', { expiresIn: '1h' }, (error, token) => {
+        jwt.sign(payload, 'secret', { expiresIn: '30d' }, (error, token) => {
             if (error) throw new CustomError(error.message, 400);
             res.json({ token });
         });
@@ -43,7 +43,7 @@ exports.signUp = async (req, res) => {
     }
 };
 
-exports.logIn = async (req, res) => {
+exports.logIn = async (req, res, next) => {
     try {
         const { email, password } = req.body;
 
@@ -66,11 +66,23 @@ exports.logIn = async (req, res) => {
             }
         };
 
-        jwt.sign(payload, 'secret', { expiresIn: '1h' }, (error, token) => {
+        jwt.sign(payload, 'secret', { expiresIn: '30d' }, (error, token) => {
             if (error) throw new CustomError(error.message, 400);
             res.json({ token });
         });
 
+    } catch (error) {
+        console.error(error.message);
+        next(error);
+    }
+};
+
+exports.currentUser = async (req, res, next) => {
+    try {
+        const userId = jwt.verify(req.get('x-auth-token'), 'secret').user.id;        
+        const user = await User.findById(userId);
+        
+        res.status(201).json( {id: user._id} );
     } catch (error) {
         console.error(error.message);
         next(error);
