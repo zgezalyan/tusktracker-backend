@@ -1,3 +1,4 @@
+require('dotenv').config();
 const express = require('express');
 const bodyParser = require('body-parser');
 const morgan = require('morgan');
@@ -29,6 +30,5 @@ app.get('/', (req, res) => {
 app.use(errorHandler);
 
 // Start server
-const PORT = process.env.PORT || 5000;
-
+const PORT = process.env.PORT;
 module.exports = app.listen(PORT, () => console.log(`Server started on port ${PORT}`));

@@ -14,7 +14,7 @@ exports.signUp = async (req, res, next) => {
         }
 
         // Hash the password
-        const salt = await bcrypt.genSalt(10);
+        const salt = await bcrypt.genSalt(process.env.GEN_VALUE);
         const hashedPassword = await bcrypt.hash(password, salt);
 
         // Save user in DB
@@ -32,7 +32,7 @@ exports.signUp = async (req, res, next) => {
             }
         };
 
-        jwt.sign(payload, 'secret', { expiresIn: '30d' }, (error, token) => {
+        jwt.sign(payload, process.env.SECRET_KEY, { expiresIn: '30d' }, (error, token) => {
             if (error) throw new CustomError(error.message, 400);
             res.json({ token });
         });
@@ -66,7 +66,7 @@ exports.logIn = async (req, res, next) => {
             }
         };
 
-        jwt.sign(payload, 'secret', { expiresIn: '30d' }, (error, token) => {
+        jwt.sign(payload, process.env.SECRET_KEY, { expiresIn: '30d' }, (error, token) => {
             if (error) throw new CustomError(error.message, 400);
             res.json({ token });
         });
@@ -79,7 +79,7 @@ exports.logIn = async (req, res, next) => {
 
 exports.currentUser = async (req, res, next) => {
     try {
-        const userId = jwt.verify(req.get('x-auth-token'), 'secret').user.id;        
+        const userId = jwt.verify(req.get('x-auth-token'), process.env.SECRET_KEY).user.id;        
         const user = await User.findById(userId);
         
         res.status(201).json( {id: user._id} );

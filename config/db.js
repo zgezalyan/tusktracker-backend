@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 
 const establishConnection = () => {    
     return new Promise(() => {
-        const mongoURI = 'mongodb://backend:backSuper12!st@54.80.235.19:27017/tusktracker_dev?authSource=admin';
+        const mongoURI = process.env.MONGO_URI;        
         try{            
             mongoose.connect(mongoURI, {
                 useNewUrlParser: true,
