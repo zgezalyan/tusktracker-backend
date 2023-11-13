@@ -31,7 +31,7 @@ exports.validateUserRegistration = [
   (req, res, next) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-        throw new CustomError({ errors: errors.array() }, 400);
+        throw new CustomError({ errors: errors.array() }, 404);
     }
     next();
   },
